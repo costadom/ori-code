@@ -6,7 +6,7 @@ import { Cinzel, Montserrat } from "next/font/google";
 import LiquidBackground from "@/components/LiquidBackground";
 
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "700", "900"] });
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "600"] });
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "600", "800"] });
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -14,17 +14,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem("oriCodeArchetype");
-    if (saved) {
-      setArchetype(JSON.parse(saved));
-    } else {
-      router.push("/quiz");
-    }
+    if (saved) setArchetype(JSON.parse(saved));
+    else router.push("/quiz");
   }, [router]);
 
   if (!archetype) return null;
 
-  // Geramos a URL da imagem baseada no prompt da IA
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(archetype.image_prompt)}?width=400&height=600&nologo=true&model=flux`;
+  // Gerador de Imagem Mística baseado no arquétipo
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(archetype.image_prompt)}?width=1080&height=1350&nologo=true&seed=${Math.floor(Math.random() * 1000)}`;
 
   return (
     <main className={`relative min-h-screen bg-[#030005] text-white py-10 px-4 ${montserrat.className}`}>
@@ -33,64 +30,68 @@ export default function CheckoutPage() {
 
       <div className="relative z-20 max-w-lg mx-auto flex flex-col items-center">
         
-        {/* CARTA DE TARÔ GERADA POR IA */}
-        <div className="w-full max-w-[340px] aspect-[2/3] bg-[#0a0710] border-2 border-[#cfb53b]/40 rounded-[2rem] overflow-hidden shadow-[0_0_40px_rgba(207,181,59,0.2)] mb-8 flex flex-col">
-          <div className="relative flex-1 bg-gray-900">
-             {/* Imagem da IA */}
-             <img 
-               src={imageUrl} 
-               alt="Arquétipo" 
-               className="w-full h-full object-cover opacity-80"
-             />
-             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0710] via-transparent to-transparent"></div>
-             
-             {/* Nome da Entidade */}
-             <div className="absolute bottom-6 left-0 right-0 text-center">
-                <h2 className={`${cinzel.className} text-4xl text-white drop-shadow-lg uppercase tracking-tighter`}>
-                  {archetype.name}
-                </h2>
-                <p className="text-[#cfb53b] text-[10px] tracking-[0.3em] uppercase font-bold mt-1">
-                  {archetype.archetype_title}
-                </p>
-             </div>
+        {/* CARD DE COMPARTILHAMENTO (ESTILO INSTAGRAM STORY) */}
+        <div id="share-card" className="w-full aspect-[9/16] max-w-[340px] bg-[#0a0710] border-4 border-[#cfb53b]/40 rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(207,181,59,0.3)] mb-8 flex flex-col relative group">
+          
+          {/* Imagem da IA como Fundo */}
+          <div className="absolute inset-0 z-0">
+            <img src={imageUrl} alt="Entidade" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0710] via-transparent to-[#0a0710]/40"></div>
+          </div>
+
+          {/* Conteúdo do Card */}
+          <div className="relative z-10 flex flex-col h-full p-8 items-center justify-between text-center">
+            <div className="space-y-1">
+              <span className="text-[10px] tracking-[0.5em] text-[#cfb53b] uppercase font-bold">Identificado</span>
+              <div className="h-[1px] w-12 bg-[#cfb53b]/40 mx-auto"></div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className={`${cinzel.className} text-4xl md:text-5xl text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] font-black uppercase tracking-tighter`}>
+                {archetype.name}
+              </h2>
+              <p className={`${cinzel.className} text-[#cfb53b] text-xs tracking-[0.3em] font-bold`}>
+                {archetype.archetype_title}
+              </p>
+              <p className="text-gray-300 text-[11px] italic px-4 leading-relaxed font-medium">
+                "{archetype.teaser}"
+              </p>
+            </div>
+
+            <div className="space-y-4 w-full">
+              <div className="bg-black/40 backdrop-blur-md border border-[#cfb53b]/20 p-3 rounded-xl">
+                 <p className="text-[9px] uppercase tracking-widest text-gray-400">Padrão Invisível</p>
+                 <div className="h-1 w-full bg-gray-800 rounded-full mt-2 overflow-hidden">
+                    <div className="h-full bg-[#cfb53b] w-[85%]"></div>
+                 </div>
+              </div>
+              <p className={`${cinzel.className} text-[10px] text-white/50 tracking-widest`}>ORI-CODE.APP</p>
+            </div>
           </div>
         </div>
 
-        {/* TEXTO BORRADO (O GATILHO) */}
-        <div className="w-full bg-black/60 border border-[#cfb53b]/20 p-6 rounded-2xl backdrop-blur-md mb-8 relative overflow-hidden">
-           <div className="filter blur-md opacity-30 select-none text-sm leading-relaxed space-y-4">
-              <p>{archetype.description.substring(0, 100)}...</p>
-              <p>O seu maior bloqueio financeiro está ligado a um padrão que...</p>
-              <p>Para transmutar esta energia e abrir os caminhos do ouro, você precisa...</p>
-           </div>
-           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-              <span className="bg-[#cfb53b] text-black px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 shadow-lg">
-                Análise Bloqueada
-              </span>
-              <p className="text-white text-xs font-medium">Pague a taxa de revelação para ler o seu destino.</p>
-           </div>
-        </div>
-
-        {/* ÁREA DE PAGAMENTO (PIX MOCK) */}
-        <div className="w-full bg-[#0a0710] border border-[#cfb53b]/20 p-8 rounded-3xl text-center shadow-2xl">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="text-gray-600 line-through text-sm italic font-light">R$ 47,00</span>
-            <span className={`${cinzel.className} text-4xl text-[#cfb53b] font-black`}>R$ 4,90</span>
-          </div>
-
-          {/* QR Code Fake */}
-          <div className="bg-white p-2 rounded-lg inline-block mb-6">
-             <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-black text-[10px] font-bold">QR CODE PIX</div>
+        {/* CTA DE PAGAMENTO */}
+        <div className="w-full bg-[#0a0710]/80 border border-[#cfb53b]/20 p-8 rounded-[2rem] backdrop-blur-xl shadow-2xl text-center">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-6">Desbloqueie sua análise completa</p>
+          
+          <div className="flex items-center justify-center gap-6 mb-8">
+            <span className="text-gray-600 line-through text-lg font-light">R$ 47,00</span>
+            <div className="relative">
+              <span className={`${cinzel.className} text-5xl text-[#cfb53b] font-black`}>R$ 4,90</span>
+              <div className="absolute -top-4 -right-8 bg-green-600 text-[8px] px-2 py-1 rounded-full text-white font-bold animate-bounce">90% OFF</div>
+            </div>
           </div>
 
           <button 
             onClick={() => router.push("/resultado")}
-            className="w-full py-5 bg-[#cfb53b] text-black font-black uppercase tracking-[0.2em] rounded-full hover:bg-white transition-all shadow-[0_0_20px_rgba(207,181,59,0.4)] active:scale-95"
+            className="w-full py-5 bg-[#cfb53b] text-black font-black uppercase tracking-[0.2em] rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_30px_rgba(207,181,59,0.5)] active:scale-95"
           >
-            Copiar Código PIX
+            Revelar Meu Destino
           </button>
           
-          <p className="mt-4 text-[9px] text-gray-500 uppercase tracking-widest">Acesso imediato após o pagamento</p>
+          <button className="mt-6 text-[10px] text-gray-500 uppercase tracking-widest hover:text-[#cfb53b] transition-colors">
+            Baixar Carta para Compartilhar
+          </button>
         </div>
       </div>
     </main>
