@@ -14,69 +14,83 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem("oriCodeArchetype");
-    if (saved) setArchetype(JSON.parse(saved));
-    else router.push("/quiz");
-  }, []);
+    if (saved) {
+      setArchetype(JSON.parse(saved));
+    } else {
+      router.push("/quiz");
+    }
+  }, [router]);
 
   if (!archetype) return null;
+
+  // Geramos a URL da imagem baseada no prompt da IA
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(archetype.image_prompt)}?width=400&height=600&nologo=true&model=flux`;
 
   return (
     <main className={`relative min-h-screen bg-[#030005] text-white py-10 px-4 ${montserrat.className}`}>
       <LiquidBackground />
-      <div className="absolute inset-0 bg-black/90 z-10"></div>
+      <div className="absolute inset-0 bg-black/90 z-10 pointer-events-none"></div>
 
       <div className="relative z-20 max-w-lg mx-auto flex flex-col items-center">
         
-        {/* CARD DE COMPARTILHAMENTO (O GATILHO VÍRAL) */}
-        <div className="w-full aspect-[3/4] bg-gradient-to-b from-[#1a1405] to-black border-2 border-[#cfb53b]/40 rounded-[2.5rem] p-8 mb-8 flex flex-col items-center justify-between shadow-[0_0_40px_rgba(207,181,59,0.2)]">
-          <span className={`${cinzel.className} text-[#cfb53b] tracking-[0.4em] uppercase text-xs`}>Energia Identificada</span>
-          
-          {/* Nome da Entidade VISÍVEL e FORTE */}
-          <div className="text-center">
-            <h2 className={`${cinzel.className} text-5xl md:text-6xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] mb-2 uppercase`}>
-              {archetype.name.split(" ")[0]} 
-            </h2>
-            <div className="h-1 w-20 bg-[#cfb53b] mx-auto rounded-full"></div>
-          </div>
-
-          {/* O TEXTO BORRADO (O que faz ele pagar) */}
-          <div className="relative w-full py-4 px-2 overflow-hidden">
-             <div className="filter blur-md opacity-40 select-none text-center space-y-2">
-                <p>Você possui um caminho de ouro guardado por forças que não dormem.</p>
-                <p>Sua inteligência financeira é superior, mas existe um bloqueio no seu chakra...</p>
-                <p>Para desbloquear a abundância total, você precisa entender o segredo de...</p>
-             </div>
-             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-black/60 backdrop-blur-sm border border-[#cfb53b]/30 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest text-[#cfb53b] font-bold">
-                  Conteúdo Bloqueado
-                </span>
+        {/* CARTA DE TARÔ GERADA POR IA */}
+        <div className="w-full max-w-[340px] aspect-[2/3] bg-[#0a0710] border-2 border-[#cfb53b]/40 rounded-[2rem] overflow-hidden shadow-[0_0_40px_rgba(207,181,59,0.2)] mb-8 flex flex-col">
+          <div className="relative flex-1 bg-gray-900">
+             {/* Imagem da IA */}
+             <img 
+               src={imageUrl} 
+               alt="Arquétipo" 
+               className="w-full h-full object-cover opacity-80"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0710] via-transparent to-transparent"></div>
+             
+             {/* Nome da Entidade */}
+             <div className="absolute bottom-6 left-0 right-0 text-center">
+                <h2 className={`${cinzel.className} text-4xl text-white drop-shadow-lg uppercase tracking-tighter`}>
+                  {archetype.name}
+                </h2>
+                <p className="text-[#cfb53b] text-[10px] tracking-[0.3em] uppercase font-bold mt-1">
+                  {archetype.archetype_title}
+                </p>
              </div>
           </div>
-
-          <button className="text-[10px] text-[#cfb53b] underline tracking-[0.2em] uppercase font-bold opacity-70">
-            Compartilhar Descoberta
-          </button>
         </div>
 
-        {/* ÁREA DE PAGAMENTO */}
-        <div className="w-full bg-[#0a0710] border border-[#cfb53b]/20 p-8 rounded-3xl text-center">
-          <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Revelação Completa + Guia</p>
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <span className="text-gray-600 line-through text-lg">R$ 47,00</span>
-            <span className={`${cinzel.className} text-4xl text-[#cfb53b] font-black animate-pulse`}>R$ 4,90</span>
+        {/* TEXTO BORRADO (O GATILHO) */}
+        <div className="w-full bg-black/60 border border-[#cfb53b]/20 p-6 rounded-2xl backdrop-blur-md mb-8 relative overflow-hidden">
+           <div className="filter blur-md opacity-30 select-none text-sm leading-relaxed space-y-4">
+              <p>{archetype.description.substring(0, 100)}...</p>
+              <p>O seu maior bloqueio financeiro está ligado a um padrão que...</p>
+              <p>Para transmutar esta energia e abrir os caminhos do ouro, você precisa...</p>
+           </div>
+           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+              <span className="bg-[#cfb53b] text-black px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 shadow-lg">
+                Análise Bloqueada
+              </span>
+              <p className="text-white text-xs font-medium">Pague a taxa de revelação para ler o seu destino.</p>
+           </div>
+        </div>
+
+        {/* ÁREA DE PAGAMENTO (PIX MOCK) */}
+        <div className="w-full bg-[#0a0710] border border-[#cfb53b]/20 p-8 rounded-3xl text-center shadow-2xl">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <span className="text-gray-600 line-through text-sm italic font-light">R$ 47,00</span>
+            <span className={`${cinzel.className} text-4xl text-[#cfb53b] font-black`}>R$ 4,90</span>
           </div>
 
-          {/* Mock do QR Code */}
-          <div className="bg-white p-3 rounded-xl inline-block mb-6 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-             <div className="w-40 h-40 bg-gray-200 flex items-center justify-center text-black text-[10px] font-bold">QR CODE PIX</div>
+          {/* QR Code Fake */}
+          <div className="bg-white p-2 rounded-lg inline-block mb-6">
+             <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-black text-[10px] font-bold">QR CODE PIX</div>
           </div>
 
           <button 
             onClick={() => router.push("/resultado")}
-            className="w-full py-5 bg-[#cfb53b] text-black font-black uppercase tracking-widest rounded-full hover:bg-white transition-all shadow-[0_0_25px_rgba(207,181,59,0.4)]"
+            className="w-full py-5 bg-[#cfb53b] text-black font-black uppercase tracking-[0.2em] rounded-full hover:bg-white transition-all shadow-[0_0_20px_rgba(207,181,59,0.4)] active:scale-95"
           >
             Copiar Código PIX
           </button>
+          
+          <p className="mt-4 text-[9px] text-gray-500 uppercase tracking-widest">Acesso imediato após o pagamento</p>
         </div>
       </div>
     </main>
